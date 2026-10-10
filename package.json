@@ -1,0 +1,41 @@
+{
+  "name": "create-node-ready",
+  "version": "1.0.0",
+  "description": "One command to scaffold a TypeScript + Express backend: a small MVC layout or a large modular one. No dependencies.",
+  "keywords": [
+    "create",
+    "scaffold",
+    "node",
+    "typescript",
+    "express",
+    "backend",
+    "boilerplate",
+    "cli"
+  ],
+  "author": "Aayush Mishra",
+  "license": "MIT",
+  "bin": {
+    "create-node-ready": "dist/src/cli.js"
+  },
+  "files": [
+    "dist/src",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "build": "node -e \"fs.rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json && node -e \"fs.chmodSync('dist/src/cli.js',0o755)\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "test:e2e": "npm run build && node dist/test/e2e/run.js",
+    "prepublishOnly": "npm test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "mongodb-memory-server": "^11.3.0",
+    "typescript": "^5.9.0"
+  }
+}

@@ -1,0 +1,36 @@
+# Runs the API and its MongoDB together:  docker compose up --build
+# It needs JWT_SECRET (32+ characters) in your .env file, which create-node-ready already generated.
+# For development with auto-reload you only need the database:  docker compose up -d mongo  and  npm run dev
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: "5000"
+      MONGODB_URI: mongodb://mongo:27017/{{dbname}}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in your .env file}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mongo-data:
